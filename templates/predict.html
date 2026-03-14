@@ -1,0 +1,210 @@
+{% extends "base.html" %}
+{% block title %}Predict — Lakshay Loan Prediction{% endblock %}
+
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <h1>Loan Approval Predictor</h1>
+    <p>Fill in your details below for an instant AI-powered prediction</p>
+  </div>
+</div>
+
+<div class="predict-wrap">
+  <!-- TABS -->
+  <div class="predict-disclaimer">
+    ⚠️ <span>Predictions are <strong>not 100% accurate</strong>. Results are based only on the inputs you provide and do not reflect actual bank decisions. This tool is for educational purposes only.</span>
+  </div>
+  <div class="tab-bar">
+    <button class="tab-btn active" onclick="showTab('predict',this)">🔍 Predict</button>
+    <button class="tab-btn" onclick="showTab('models',this)">📊 Model Comparison</button>
+    <button class="tab-btn" onclick="showTab('features',this)">🔬 Feature Importance</button>
+  </div>
+
+  <!-- ── PREDICT TAB ── -->
+  <div id="tab-predict" class="tab-pane active">
+    <div class="predict-layout">
+
+      <!-- FORM -->
+      <div class="card form-card">
+        <div class="card-header">📋 Applicant Details</div>
+        <form id="loanForm" autocomplete="off">
+          <div class="form-row">
+            <div class="field">
+              <label>Full Name</label>
+              <input name="name" placeholder="e.g. Lakshay" maxlength="50"/>
+            </div>
+            <div class="field">
+              <label>Age <span class="req">*</span></label>
+              <input name="age" type="number" placeholder="24" min="18" max="100" required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Annual Income (₹) <span class="req">*</span></label>
+              <input name="income" type="number" placeholder="450000" min="1" required/>
+            </div>
+            <div class="field">
+              <label>Credit Score (300–900) <span class="req">*</span></label>
+              <input name="credit" type="number" placeholder="720" min="300" max="900" required/>
+              <div class="input-hint" id="credit-hint"></div>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Job Experience (yrs) <span class="req">*</span></label>
+              <input name="experience" type="number" placeholder="3" min="0" max="50" required/>
+            </div>
+            <div class="field">
+              <label>Loan Amount (₹) <span class="req">*</span></label>
+              <input name="loan" type="number" placeholder="200000" min="1" required/>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Education</label>
+              <select name="education">
+                <option value="0">High School</option>
+                <option value="1" selected>Graduate</option>
+                <option value="2">Post Graduate</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Marital Status</label>
+              <select name="married">
+                <option value="0">Single</option>
+                <option value="1">Married</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label>Existing Loan?</label>
+              <select name="existing">
+                <option value="0">No</option>
+                <option value="1">Yes</option>
+              </select>
+            </div>
+          </div>
+          <button type="submit" class="btn-predict" id="submit-btn">
+            <span id="btn-text">🔍 Predict Approval</span>
+          </button>
+          <div class="error-box" id="err-box"></div>
+        </form>
+      </div>
+
+      <!-- RESULT PANEL -->
+      <div id="right-panel">
+        <!-- Placeholder -->
+        <div class="card placeholder-card" id="placeholder-card">
+          <div class="placeholder-inner">
+            <div class="placeholder-icon">🤖</div>
+            <div class="placeholder-title">AI Loan Analyzer</div>
+            <div class="placeholder-text">Fill in your details and click Predict.<br/>You'll get a full breakdown of your loan profile.</div>
+            <div class="placeholder-chips">
+              <span>✅ Approval Chance</span>
+              <span>📊 Factor Analysis</span>
+              <span>💡 Smart Advice</span>
+              <span>💰 EMI Estimate</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Result -->
+        <div id="result-card" style="display:none">
+          <div class="card result-top-card">
+            <div class="result-top">
+              <div class="gauge-section">
+                <div class="gauge-wrap">
+                  <canvas id="gaugeChart" width="180" height="180"></canvas>
+                  <div class="gauge-center">
+                    <div class="gauge-pct" id="gauge-pct">0%</div>
+                    <div class="gauge-sub">Chance</div>
+                  </div>
+                </div>
+              </div>
+              <div class="decision-section">
+                <div class="applicant-name" id="res-name"></div>
+                <div class="decision-badge" id="res-decision"></div>
+                <div class="risk-pill" id="risk-pill"></div>
+                <div class="emi-box" id="emi-box"></div>
+                <div class="model-tag">Predicted by: <span id="res-model"></span></div>
+              </div>
+            </div>
+            <div class="input-summary" id="input-summary"></div>
+          </div>
+
+          <div class="card factor-card">
+            <div class="card-header">🧪 Profile Factor Analysis</div>
+            <div class="factor-table" id="factor-table"></div>
+          </div>
+
+          <div class="card advice-card">
+            <div class="card-header">💡 Smart Recommendations</div>
+            <div id="advice-content"></div>
+            <div id="rec-loan-box" style="display:none" class="rec-loan-box"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ── MODELS TAB ── -->
+  <div id="tab-models" class="tab-pane">
+    <div class="card chart-card">
+      <div class="card-header">🏆 Algorithm Accuracy Comparison</div>
+      <div class="chart-wrap"><canvas id="barChart"></canvas></div>
+      <div class="algo-grid" id="algo-grid"></div>
+    </div>
+    <div class="card info-card">
+      <div class="card-header">📚 Algorithms Explained</div>
+      <div class="algo-info-grid">
+        <div class="algo-info-item">
+          <div class="algo-info-title">Supervised Learning</div>
+          <ul>
+            <li><b>Logistic Regression</b> — Linear probability model</li>
+            <li><b>Decision Tree</b> — Rule-based splits</li>
+            <li><b>Random Forest</b> — Ensemble of 100 trees</li>
+            <li><b>Gradient Boosting</b> — Sequential error correction</li>
+            <li><b>KNN</b> — Distance-based classification</li>
+            <li><b>SVM</b> — Hyperplane separation</li>
+            <li><b>Naive Bayes</b> — Probabilistic classifier</li>
+          </ul>
+        </div>
+        <div class="algo-info-item">
+          <div class="algo-info-title">Unsupervised Learning</div>
+          <ul>
+            <li><b>K-Means</b> — Centroid-based clustering</li>
+            <li><b>DBSCAN</b> — Density-based clustering</li>
+            <li><b>Hierarchical</b> — Tree-based clustering</li>
+          </ul>
+          <div class="algo-info-title" style="margin-top:16px">ML Pipeline</div>
+          <ul>
+            <li>StandardScaler preprocessing</li>
+            <li>80/20 train-test split</li>
+            <li>Auto best-model selection</li>
+            <li>predict_proba() for probability</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── FEATURES TAB ── -->
+  <div id="tab-features" class="tab-pane">
+    <div class="card chart-card">
+      <div class="card-header">🔬 Feature Importance — Random Forest</div>
+      <div class="chart-wrap"><canvas id="featChart"></canvas></div>
+    </div>
+    <div class="card info-card">
+      <div class="card-header">📖 Feature Descriptions</div>
+      <div class="feat-desc-grid" id="feat-desc-grid"></div>
+    </div>
+  </div>
+
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="/static/script.js"></script>
+{% endblock %}

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>{% block title %}Lakshay Loan Prediction{% endblock %}</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet"/>
+<link rel="stylesheet" href="/static/style.css"/>
+</head>
+<body>
+
+<!-- ── NAVBAR ── -->
+<nav class="navbar">
+  <a href="/" class="nav-brand">🏦 L-Shay <span>Loan Prediction</span></a>
+  <button class="hamburger" id="hamburger" onclick="toggleMenu()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
+  <div class="nav-links" id="nav-links">
+    <a href="/" class="nav-link {% if request.path == '/' %}active{% endif %}">Home</a>
+    <a href="/predict-page" class="nav-link {% if request.path == '/predict-page' %}active{% endif %}">Predict</a>
+    <a href="/about" class="nav-link {% if request.path == '/about' %}active{% endif %}">About</a>
+    <a href="/contact" class="nav-link {% if request.path == '/contact' %}active{% endif %}">Contact</a>
+    <a href="/predict-page" class="nav-cta">Get Prediction →</a>
+  </div>
+</nav>
+
+<!-- ── PAGE CONTENT ── -->
+{% block content %}{% endblock %}
+
+<!-- ── FOOTER ── -->
+<footer class="footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="footer-logo">🏦 L-Shay Loan Prediction</div>
+      <div class="footer-tagline">AI-powered loan approval analysis for smarter financial decisions.</div>
+      <div class="footer-socials">
+        <a href="mailto:developbylshay@gmail.com" class="social-link" title="Gmail">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>
+          developbylshay@gmail.com
+        </a>
+        <a href="https://instagram.com/develop_by_lshay" target="_blank" class="social-link" title="Instagram">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="2" width="20" height="20" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg>
+          @develop_by_lshay
+        </a>
+      </div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <div class="footer-col-title">Pages</div>
+        <a href="/">Home</a>
+        <a href="/predict-page">Predict</a>
+        <a href="/about">About</a>
+        <a href="/contact">Contact</a>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Legal</div>
+        <a href="/privacy">Privacy Policy</a>
+        <a href="/terms">Terms & Conditions</a>
+        <a href="/cookies">Cookie Policy</a>
+        <a href="/security">Security</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    © 2026 L-Shay Loan Prediction. Built with ML &amp; Flask. For educational purposes only. &nbsp;|&nbsp; ⚠️ Predictions are not 100% accurate — results are based on your inputs only.
+  </div>
+</footer>
+
+<script>
+function toggleMenu() {
+  document.getElementById('nav-links').classList.toggle('open');
+  document.getElementById('hamburger').classList.toggle('active');
+}
+</script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block title %}About — Lakshay Loan Prediction{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <h1>About Us</h1>
+    <p>Learn about Lakshay Loan Prediction and the technology behind it</p>
+  </div>
+</div>
+<div class="static-page">
+  <div class="about-grid">
+    <div class="card">
+      <div class="card-header">🎯 Our Mission</div>
+      <p class="static-text">Lakshay Loan Prediction is an AI-powered loan approval prediction system built to help individuals understand their loan eligibility before approaching a bank. We use machine learning to give you a realistic picture of your approval chances.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">🤖 The Technology</div>
+      <p class="static-text">Our system trains 7 supervised ML algorithms — Logistic Regression, Decision Tree, Random Forest, Gradient Boosting, KNN, SVM, and Naive Bayes — on 1000+ realistic loan records. The best-performing model (Random Forest at 89% accuracy) is used for predictions.</p>
+    </div>
+    <div class="card">
+      <div class="card-header">📊 What We Analyze</div>
+      <ul class="static-list">
+        <li>Credit Score — your financial trustworthiness</li>
+        <li>Annual Income — repayment capacity</li>
+        <li>Loan-to-Income Ratio — risk assessment</li>
+        <li>Job Experience — employment stability</li>
+        <li>Age — loan tenure suitability</li>
+        <li>Existing Loans — current liability</li>
+        <li>Education Level — profile strength</li>
+        <li>Marital Status — financial responsibility</li>
+      </ul>
+    </div>
+    <div class="card">
+      <div class="card-header">⚠️ Disclaimer</div>
+      <p class="static-text">This tool is built for educational purposes as part of a BCA Machine Learning project. Predictions are based on a synthetic dataset and should not be used as actual financial advice. Always consult a certified financial advisor before applying for a loan.</p>
+    </div>
+  </div>
+  <div class="card" style="margin-top:0">
+    <div class="card-header">👨‍💻 Developer</div>
+    <div class="dev-profile">
+      <div class="dev-avatar">L</div>
+      <div>
+        <div class="dev-name">Lakshay</div>
+        <div class="dev-role">BCA Student — Machine Learning Project</div>
+        <div class="dev-desc">Built this system to demonstrate a complete ML pipeline including data generation, model training, comparison, and deployment via Flask.</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

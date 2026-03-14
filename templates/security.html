@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}Security — Lakshay Loan Prediction{% endblock %}
+{% block content %}
+<div class="page-hero"><div class="page-hero-inner"><h1>Security</h1><p>How we keep your data safe</p></div></div>
+<div class="static-page">
+  <div class="security-grid">
+    <div class="card sec-card"><div class="sec-icon">🔒</div><div class="sec-title">No Data Storage</div><div class="sec-desc">Form inputs are never written to any database or file. Each prediction is processed in memory and discarded immediately.</div></div>
+    <div class="card sec-card"><div class="sec-icon">🛡️</div><div class="sec-title">Input Validation</div><div class="sec-desc">All inputs are validated server-side before processing. Invalid or malicious inputs are rejected with clear error messages.</div></div>
+    <div class="card sec-card"><div class="sec-icon">🔐</div><div class="sec-title">No Authentication Required</div><div class="sec-desc">No accounts, passwords, or personal identifiers are required. You remain completely anonymous.</div></div>
+    <div class="card sec-card"><div class="sec-icon">📦</div><div class="sec-title">Isolated ML Model</div><div class="sec-desc">The ML model runs in an isolated Python environment. It only receives numerical features — no raw personal text is passed to the model.</div></div>
+    <div class="card sec-card"><div class="sec-icon">🌐</div><div class="sec-title">Local Deployment</div><div class="sec-desc">This app runs locally on your machine. No data leaves your network unless you deploy it to a public server.</div></div>
+    <div class="card sec-card"><div class="sec-icon">⚠️</div><div class="sec-title">Educational Use</div><div class="sec-desc">This is an academic project. For production financial applications, additional security measures (HTTPS, auth, audit logs) would be required.</div></div>
+  </div>
+</div>
+{% endblock %}

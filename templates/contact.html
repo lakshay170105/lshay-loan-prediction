@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %}Contact — Lakshay Loan Prediction{% endblock %}
+{% block content %}
+<div class="page-hero">
+  <div class="page-hero-inner">
+    <h1>Contact Us</h1>
+    <p>Have questions? We'd love to hear from you.</p>
+  </div>
+</div>
+<div class="static-page">
+  <div class="contact-grid">
+    <div class="card">
+      <div class="card-header">📬 Get In Touch</div>
+      <form class="contact-form" onsubmit="submitContact(event)">
+        <div class="field"><label>Your Name</label><input type="text" placeholder="Lakshay" required/></div>
+        <div class="field"><label>Email Address</label><input type="email" placeholder="you@example.com" required/></div>
+        <div class="field"><label>Subject</label>
+          <select>
+            <option>General Inquiry</option>
+            <option>Bug Report</option>
+            <option>Feature Request</option>
+            <option>Academic / Project Query</option>
+          </select>
+        </div>
+        <div class="field"><label>Message</label><textarea placeholder="Your message..." rows="5" required></textarea></div>
+        <button type="submit" class="btn-predict">Send Message</button>
+        <div id="contact-success" style="display:none" class="success-msg">✅ Message sent! (Demo only — no actual email sent)</div>
+      </form>
+    </div>
+    <div>
+      <div class="card" style="margin-bottom:16px">
+        <div class="card-header">📍 Info</div>
+        <div class="contact-info-item">📧 <span>developbylshay@gmail.com</span></div>
+        <div class="contact-info-item">📸 <span>@develop_by_lshay (Instagram)</span></div>
+        <div class="contact-info-item">🕐 <span>Response within 24 hours</span></div>
+      </div>
+      <div class="card">
+        <div class="card-header">❓ FAQ</div>
+        <div class="faq-item"><div class="faq-q">Is this a real bank service?</div><div class="faq-a">No. This is an educational ML project for BCA studies.</div></div>
+        <div class="faq-item"><div class="faq-q">Is my data stored?</div><div class="faq-a">No. All predictions are processed locally and nothing is saved.</div></div>
+        <div class="faq-item"><div class="faq-q">How accurate is the model?</div><div class="faq-a">The Random Forest model achieves 89% accuracy on test data.</div></div>
+      </div>
+    </div>
+  </div>
+</div>
+<script>
+function submitContact(e) {
+  e.preventDefault();
+  document.getElementById('contact-success').style.display = 'block';
+  e.target.reset();
+}
+</script>
+{% endblock %}
