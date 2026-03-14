@@ -1,11 +1,12 @@
 /* ═══════════════════════════════════════════════════════
-   L-Shay Loan Prediction — script.js
+   L-Shay Loan Prediction — script.js  (fixed)
    ═══════════════════════════════════════════════════════ */
 
-let gaugeChart = null;
-let barChart   = null;
-let featChart  = null;
-let scoresData = null;   // cached from /scores
+let gaugeChart  = null;
+let barChart    = null;
+let featChart   = null;
+let scoresData  = null;
+let chartsReady = false;
 
 const FEAT_DESC = {
   Age:          "Applicant's age — younger applicants may have less credit history.",
@@ -21,7 +22,8 @@ const FEAT_DESC = {
 /* ── Credit score live hint ─────────────────────────────────────────────── */
 function updateCreditHint(val) {
   const hint = document.getElementById('credit-hint');
-  if (!hint || !val) { if (hint) hint.textContent = ''; return; }
+  if (!hint) return;
+  if (!val) { hint.textContent = ''; return; }
   const v = parseInt(val);
   if (v >= 750)      { hint.textContent = '✅ Excellent'; hint.className = 'input-hint hint-good'; }
   else if (v >= 650) { hint.textContent = '👍 Good';      hint.className = 'input-hint hint-ok'; }
@@ -36,171 +38,162 @@ function showTab(name, btn) {
   document.getElementById('tab-' + name).classList.add('active');
   btn.classList.add('active');
 
-  if ((name === 'models' || name === 'features') && !scoresData) {
-    loadScores().then(() => renderCharts());
-  } else if ((name === 'models' || name === 'features') && scoresData) {
-    renderCharts();
+  if (name === 'models' || name === 'features') {
+    // setTimeout ensures tab is display:block before Chart.js measures canvas size
+    setTimeout(() => {
+      if (!scoresData) {
+        loadScores().then(() => buildCharts());
+      } else {
+        buildCharts(); // always rebuild so canvas is fresh
+      }
+    }, 60);
   }
 }
 
-/* ── Fetch /scores once ─────────────────────────────────────────────────── */
+/* ── Fetch /scores ──────────────────────────────────────────────────────── */
 async function loadScores() {
   try {
     const res  = await fetch('/scores');
     scoresData = await res.json();
   } catch(e) {
-    console.error('Failed to load scores', e);
+    console.error('Failed to load scores:', e);
   }
 }
 
-/* ── Render bar + feature charts ────────────────────────────────────────── */
-function renderCharts() {
+/* ── Build charts (called once after data is ready) ─────────────────────── */
+function buildCharts() {
   if (!scoresData) return;
   const { scores, best, importances } = scoresData;
 
-  // Update best model badge
+  // Best model badge
   const tag = document.getElementById('best-tag-models');
   if (tag) tag.textContent = '🏆 ' + best;
 
-  // ── Bar chart (Model Comparison) ──────────────────────────────────────
-  const names  = Object.keys(scores);
-  const vals   = Object.values(scores);
-  const colors = names.map(n =>
-    n === best ? 'rgba(34,197,94,0.85)' : 'rgba(59,130,246,0.75)'
-  );
-  const borderColors = names.map(n =>
-    n === best ? '#22c55e' : '#3b82f6'
-  );
-
-  const bCtx = document.getElementById('barChart');
-  if (!bCtx) return;
-  if (barChart) barChart.destroy();
-  barChart = new Chart(bCtx.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: names,
-      datasets: [{
-        label: 'Accuracy (%)',
-        data: vals,
-        backgroundColor: colors,
-        borderColor: borderColors,
-        borderWidth: 2,
-        borderRadius: 8,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 700, easing: 'easeOutQuart' },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1e293b',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          callbacks: {
-            label: ctx => ` Accuracy: ${ctx.parsed.y}%`,
-            afterLabel: ctx => ctx.label === best ? ' 🏆 Best Model' : ''
+  /* ── Bar chart ── */
+  const bCanvas = document.getElementById('barChart');
+  if (bCanvas) {
+    if (barChart) { barChart.destroy(); barChart = null; }
+    const names  = Object.keys(scores);
+    const vals   = Object.values(scores);
+    barChart = new Chart(bCanvas, {
+      type: 'bar',
+      data: {
+        labels: names,
+        datasets: [{
+          label: 'Accuracy (%)',
+          data: vals,
+          backgroundColor: names.map(n => n === best ? 'rgba(34,197,94,0.85)' : 'rgba(59,130,246,0.75)'),
+          borderColor:     names.map(n => n === best ? '#22c55e' : '#3b82f6'),
+          borderWidth: 2,
+          borderRadius: 8,
+          borderSkipped: false,
+        }]
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 600 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            callbacks: {
+              label: ctx => ` Accuracy: ${ctx.parsed.y}%`,
+              afterLabel: ctx => ctx.label === best ? ' 🏆 Best Model' : ''
+            }
           }
-        }
-      },
-      scales: {
-        x: {
-          ticks: { color: '#94a3b8', font: { size: 11 } },
-          grid:  { color: 'rgba(255,255,255,0.04)' }
         },
-        y: {
-          min: 50, max: 100,
-          ticks: { color: '#94a3b8', callback: v => v + '%', font: { size: 11 } },
-          grid:  { color: 'rgba(255,255,255,0.06)' }
+        scales: {
+          x: { ticks: { color: '#94a3b8', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+          y: { min: 50, max: 100,
+               ticks: { color: '#94a3b8', callback: v => v + '%', font: { size: 11 } },
+               grid: { color: 'rgba(255,255,255,0.06)' } }
         }
       }
-    }
-  });
+    });
 
-  // Algo chips
-  const grid = document.getElementById('algo-grid');
-  if (grid) {
-    grid.innerHTML = names.map(n => `
-      <div class="algo-chip ${n === best ? 'best' : ''}">
-        <div class="algo-chip-name">${n}</div>
-        <div class="algo-chip-score">${scores[n]}%</div>
-      </div>`).join('');
+    // Algo chips
+    const grid = document.getElementById('algo-grid');
+    if (grid) {
+      grid.innerHTML = names.map(n => `
+        <div class="algo-chip ${n === best ? 'best' : ''}">
+          <div class="algo-chip-name">${n}</div>
+          <div class="algo-chip-score">${scores[n]}%</div>
+        </div>`).join('');
+    }
   }
 
-  // ── Feature importance chart (horizontal bar) ─────────────────────────
-  const fNames  = Object.keys(importances);
-  const fVals   = Object.values(importances);
-  const fColors = fVals.map(v =>
-    v >= 30 ? 'rgba(239,68,68,0.8)' :
-    v >= 15 ? 'rgba(245,158,11,0.8)' :
-    v >= 8  ? 'rgba(59,130,246,0.8)' :
-              'rgba(100,116,139,0.7)'
-  );
+  /* ── Feature importance chart ── */
+  const fCanvas = document.getElementById('featChart');
+  if (fCanvas) {
+    if (featChart) { featChart.destroy(); featChart = null; }
+    const fNames = Object.keys(importances);
+    const fVals  = Object.values(importances);
+    const fColors = fVals.map(v =>
+      v >= 30 ? 'rgba(239,68,68,0.85)'   :
+      v >= 15 ? 'rgba(245,158,11,0.85)'  :
+      v >= 8  ? 'rgba(59,130,246,0.85)'  :
+                'rgba(100,116,139,0.75)'
+    );
 
-  const fCtx = document.getElementById('featChart');
-  if (!fCtx) return;
-  if (featChart) featChart.destroy();
-  featChart = new Chart(fCtx.getContext('2d'), {
-    type: 'bar',
-    data: {
-      labels: fNames,
-      datasets: [{
-        label: 'Importance (%)',
-        data: fVals,
-        backgroundColor: fColors,
-        borderColor: fColors.map(c => c.replace('0.8','1').replace('0.7','1')),
-        borderWidth: 1,
-        borderRadius: 6,
-        borderSkipped: false,
-      }]
-    },
-    options: {
-      indexAxis: 'y',
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: { duration: 700, easing: 'easeOutQuart' },
-      plugins: {
-        legend: { display: false },
-        tooltip: {
-          backgroundColor: '#1e293b',
-          borderColor: 'rgba(255,255,255,0.1)',
-          borderWidth: 1,
-          callbacks: { label: ctx => ` ${ctx.parsed.x}% importance` }
-        }
+    featChart = new Chart(fCanvas, {
+      type: 'bar',
+      data: {
+        labels: fNames,
+        datasets: [{
+          label: 'Importance (%)',
+          data: fVals,
+          backgroundColor: fColors,
+          borderWidth: 0,
+          borderRadius: 6,
+          borderSkipped: false,
+        }]
       },
-      scales: {
-        x: {
-          ticks: { color: '#94a3b8', callback: v => v + '%', font: { size: 11 } },
-          grid:  { color: 'rgba(255,255,255,0.06)' }
+      options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: false,
+        animation: { duration: 600 },
+        plugins: {
+          legend: { display: false },
+          tooltip: {
+            backgroundColor: '#1e293b',
+            borderColor: 'rgba(255,255,255,0.1)',
+            borderWidth: 1,
+            callbacks: { label: ctx => ` ${ctx.parsed.x}% importance` }
+          }
         },
-        y: {
-          ticks: { color: '#e2e8f0', font: { size: 12, weight: '500' } },
-          grid:  { display: false }
+        scales: {
+          x: { ticks: { color: '#94a3b8', callback: v => v + '%', font: { size: 11 } },
+               grid: { color: 'rgba(255,255,255,0.06)' } },
+          y: { ticks: { color: '#e2e8f0', font: { size: 12 } }, grid: { display: false } }
         }
       }
-    }
-  });
+    });
 
-  // Feature description cards
-  const fdg = document.getElementById('feat-desc-grid');
-  if (fdg) {
-    fdg.innerHTML = fNames.map((n, i) => `
-      <div class="feat-desc-item">
-        <div class="feat-desc-name">${n} <span class="feat-pct">${fVals[i]}%</span></div>
-        <div class="feat-desc-text">${FEAT_DESC[n] || ''}</div>
-      </div>`).join('');
+    // Feature desc cards
+    const fdg = document.getElementById('feat-desc-grid');
+    if (fdg) {
+      fdg.innerHTML = fNames.map((n, i) => `
+        <div class="feat-desc-item">
+          <div class="feat-desc-name">${n} <span class="feat-pct">${fVals[i]}%</span></div>
+          <div class="feat-desc-text">${FEAT_DESC[n] || ''}</div>
+        </div>`).join('');
+    }
   }
+
+  chartsReady = true;
 }
 
 /* ── Gauge chart ────────────────────────────────────────────────────────── */
 function drawGauge(val) {
-  const color = val >= 80 ? '#22c55e' : val >= 50 ? '#f59e0b' : '#ef4444';
-  const ctx   = document.getElementById('gaugeChart');
-  if (!ctx) return;
-  if (gaugeChart) gaugeChart.destroy();
-  gaugeChart = new Chart(ctx.getContext('2d'), {
+  const color  = val >= 80 ? '#22c55e' : val >= 50 ? '#f59e0b' : '#ef4444';
+  const canvas = document.getElementById('gaugeChart');
+  if (!canvas) return;
+  if (gaugeChart) { gaugeChart.destroy(); gaugeChart = null; }
+  gaugeChart = new Chart(canvas, {
     type: 'doughnut',
     data: {
       datasets: [{
@@ -219,63 +212,69 @@ function drawGauge(val) {
   });
 }
 
-/* ── Render result card ─────────────────────────────────────────────────── */
+/* ── Render full result card ────────────────────────────────────────────── */
 function renderResult(d) {
+  // Hide placeholder, show result
   document.getElementById('placeholder-card').style.display = 'none';
   const card = document.getElementById('result-card');
   card.style.display = 'block';
-  card.classList.add('animate-in');
 
-  // Gauge
+  /* Gauge */
   document.getElementById('gauge-pct').textContent = d.chance + '%';
   drawGauge(d.chance);
 
-  // Name
-  document.getElementById('res-name').textContent = d.name;
+  /* Name */
+  document.getElementById('res-name').textContent = d.name || 'Applicant';
 
-  // Decision badge
+  /* Decision badge */
   const badge = document.getElementById('res-decision');
   badge.textContent = d.decision;
-  badge.className   = 'decision-badge ' + (
-    d.decision === 'Approved'        ? 'badge-approved' :
-    d.decision === 'Moderate Chance' ? 'badge-moderate' : 'badge-rejected'
+  badge.className = 'decision-badge ' + (
+    d.decision === 'Approved'        ? 'badge-approved'  :
+    d.decision === 'Moderate Chance' ? 'badge-moderate'  : 'badge-rejected'
   );
 
-  // Risk pill
-  const riskEl = document.getElementById('res-risk');
-  const riskLow = d.risk === 'Low', riskMed = d.risk === 'Medium';
-  riskEl.className = 'risk-pill ' + (riskLow ? 'risk-pill-low' : riskMed ? 'risk-pill-medium' : 'risk-pill-high');
-  const dotColor   = riskLow ? 'dot-low' : riskMed ? 'dot-medium' : 'dot-high';
-  riskEl.innerHTML = `<span class="risk-dot ${dotColor}"></span> Risk: ${d.risk}`;
+  /* Risk pill */
+  const riskEl  = document.getElementById('res-risk');
+  const low     = d.risk === 'Low', med = d.risk === 'Medium';
+  riskEl.className = 'risk-pill ' + (low ? 'risk-pill-low' : med ? 'risk-pill-medium' : 'risk-pill-high');
+  riskEl.innerHTML = `<span class="risk-dot ${low ? 'dot-low' : med ? 'dot-medium' : 'dot-high'}"></span> Risk: ${d.risk}`;
 
-  // EMI
+  /* EMI */
   document.getElementById('res-emi').innerHTML = `💰 Est. EMI: <span>${d.emi}</span>`;
 
-  // Model tag
+  /* Model */
   document.getElementById('res-model').textContent = d.best_model;
 
-  // Input summary chips
+  /* Input summary chips */
   const inp = d.inputs;
   document.getElementById('input-summary').innerHTML = [
     ['Age', inp.age], ['Income', inp.income],
     ['Credit', inp.credit], ['Loan', inp.loan], ['Exp', inp.experience]
-  ].map(([k,v]) => `<div class="summary-chip"><b>${k}:</b> ${v}</div>`).join('');
+  ].map(([k, v]) => `<div class="summary-chip"><b>${k}:</b> ${v}</div>`).join('');
 
-  // Factor table
+  /* Factor table */
   const ft = document.getElementById('factor-table');
-  ft.innerHTML = d.factors.map(f => `
-    <div class="factor-row">
-      <div class="factor-label">${f.label}</div>
-      <div class="factor-value fv-${f.status}">${f.value}</div>
-      <div class="factor-detail">${f.detail}</div>
-    </div>`).join('');
+  if (d.factors && d.factors.length) {
+    ft.innerHTML = d.factors.map(f => `
+      <div class="factor-row">
+        <div class="factor-label">${f.label}</div>
+        <div class="factor-value fv-${f.status}">${f.value}</div>
+        <div class="factor-detail">${f.detail}</div>
+      </div>`).join('');
+  } else {
+    ft.innerHTML = '<p style="color:#64748b;font-size:0.85rem;padding:8px">No factor data.</p>';
+  }
 
-  // Advice list
+  /* Advice */
   const al = document.getElementById('advice-list');
-  al.innerHTML = d.advice.map(a => `
-    <li class="advice-item">${a}</li>`).join('');
+  if (d.advice && d.advice.length) {
+    al.innerHTML = d.advice.map(a => `<li class="advice-item">${a}</li>`).join('');
+  } else {
+    al.innerHTML = '<li class="advice-item">✅ Profile looks good. Apply with confidence.</li>';
+  }
 
-  // Recommended loan
+  /* Recommended loan */
   const rlb = document.getElementById('rec-loan-box');
   if (d.rec_loan) {
     rlb.style.display = 'block';
@@ -283,38 +282,42 @@ function renderResult(d) {
   } else {
     rlb.style.display = 'none';
   }
+
+  // Scroll result into view on mobile
+  if (window.innerWidth < 1024) {
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }
 }
 
 /* ── Form submit ────────────────────────────────────────────────────────── */
 document.addEventListener('DOMContentLoaded', () => {
-  // Pre-load scores in background
-  loadScores();
+  loadScores(); // pre-fetch in background
 
   const form    = document.getElementById('loanForm');
   const errBox  = document.getElementById('err-box');
   const btnText = document.getElementById('btn-text');
   const btn     = document.getElementById('submit-btn');
-
   if (!form) return;
 
-  form.addEventListener('submit', async function(e) {
+  form.addEventListener('submit', async function (e) {
     e.preventDefault();
-    errBox.textContent = '';
+    errBox.textContent  = '';
+    btn.disabled        = true;
     btn.classList.add('loading');
     btnText.textContent = '⏳ Analyzing...';
 
     try {
       const res = await fetch('/predict', { method: 'POST', body: new FormData(this) });
       const d   = await res.json();
-
       if (d.error) {
         errBox.textContent = Array.isArray(d.error) ? d.error.join(' ') : d.error;
       } else {
         renderResult(d);
       }
-    } catch(err) {
+    } catch (err) {
       errBox.textContent = 'Network error. Please try again.';
     } finally {
+      btn.disabled        = false;
       btn.classList.remove('loading');
       btnText.textContent = '🔍 Predict Approval';
     }
