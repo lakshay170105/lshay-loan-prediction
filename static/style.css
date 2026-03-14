@@ -341,3 +341,21 @@ textarea{resize:vertical;min-height:100px}
 .predict-disclaimer{background:rgba(245,158,11,0.06);border:1px solid rgba(245,158,11,0.15);
   border-radius:10px;padding:10px 16px;font-size:0.8rem;color:#92400e;color:#d97706;
   margin-bottom:18px;display:flex;gap:8px;align-items:flex-start;line-height:1.6}
+
+/* ── Advice list ── */
+.advice-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:9px}
+.advice-list .advice-item{display:flex;gap:10px;padding:11px 14px;border-radius:10px;
+  background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.06);
+  font-size:0.84rem;color:#94a3b8;line-height:1.6;list-style:none}
+
+/* ── Feature % badge ── */
+.feat-pct{font-size:0.72rem;color:#60a5fa;font-weight:600;margin-left:6px;
+  background:rgba(96,165,250,0.1);padding:1px 7px;border-radius:10px}
+
+/* ── Best model badge in chart header ── */
+.best-badge{margin-left:10px;font-size:0.75rem;color:#22c55e;font-weight:600;
+  background:rgba(34,197,94,0.1);border:1px solid rgba(34,197,94,0.2);
+  padding:2px 10px;border-radius:12px}
+
+/* ── Chart card min height ── */
+.chart-card .chart-wrap{height:320px}
