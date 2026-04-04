@@ -213,7 +213,6 @@ def predict():
 
 @app.route('/all-predictions', methods=['POST'])
 def all_predictions():
-    """Run all 7 models on the same input — returns each model's chance + decision."""
     try:
         d = parse_input(request.form)
     except (KeyError, ValueError) as e:
@@ -225,7 +224,59 @@ def all_predictions():
 
     feat   = np.array([[d['age'], d['income'], d['credit'], d['experience'],
                          d['loan'], d['existing'], d['education'], d['married']]])
-    feat_s = scaler.transform(feat)   # same scaler as /predict
+    feat_s = scaler.transform(feat)
+
+    # ── Profile weak points (used for per-model reasons) ──────────────────────
+    ratio     = round(d['loan'] / d['income'], 1) if d['income'] > 0 else 999
+    weak      = []
+    if d['credit'] < 650:  weak.append("low CIBIL score")
+    if ratio > 8:          weak.append(f"high loan-to-income ratio ({ratio}x)")
+    if d['income'] < 40000: weak.append("low income")
+    if d['experience'] < 2: weak.append("less job experience")
+    if d['existing'] == 1: weak.append("existing active loan")
+
+    # ── Per-model reason logic ─────────────────────────────────────────────────
+    MODEL_FOCUS = {
+        "Logistic Regression": "linear income & credit score boundary",
+        "Decision Tree":       "rule-based credit + income splits",
+        "Random Forest":       "200-tree majority vote on all 8 factors",
+        "Gradient Boosting":   "sequential error correction on credit & loan ratio",
+        "KNN":                 "similarity to 7 nearest approved/rejected profiles",
+        "SVM":                 "hyperplane margin between approved & rejected classes",
+        "Naive Bayes":         "independent probability of each feature",
+    }
+
+    def model_reason(name, chance, d, weak):
+        focus = MODEL_FOCUS.get(name, "multiple factors")
+        if chance >= 80:
+            return f"Strong profile detected via {focus}. All key factors look good."
+        if chance >= 50:
+            if weak:
+                return f"Moderate score via {focus}. Weak points: {', '.join(weak[:2])}."
+            return f"Borderline profile via {focus}. Minor improvements can push to Approved."
+        # Low chance
+        if weak:
+            return f"Rejected via {focus} mainly due to: {', '.join(weak[:3])}."
+        return f"Profile does not meet threshold via {focus}."
+
+    def model_solution(name, chance, d, weak):
+        if chance >= 80:
+            return "Keep your profile strong. Apply with confidence."
+        tips = []
+        if d['credit'] < 650:
+            tips.append("Raise CIBIL to 700+ — pay EMIs on time for 6 months")
+        if ratio > 8:
+            safe = int(d['income'] * 6)
+            tips.append(f"Reduce loan to ₹{safe:,} (6x income is ideal)")
+        if d['income'] < 40000:
+            tips.append("Show additional income sources or add a co-applicant")
+        if d['experience'] < 2:
+            tips.append("Complete 2+ years at current job before applying")
+        if d['existing'] == 1:
+            tips.append("Close existing loan first to improve eligibility")
+        if not tips:
+            tips.append("Slightly improve credit score or reduce loan amount")
+        return " | ".join(tips[:3])
 
     results = {}
     for name, clf in ALL_MODELS.items():
@@ -234,9 +285,39 @@ def all_predictions():
         if chance >= 80:   dec, risk = "Approved",        "Low"
         elif chance >= 50: dec, risk = "Moderate Chance", "Medium"
         else:              dec, risk = "Risky / Rejected", "High"
-        results[name] = {"chance": chance, "decision": dec, "risk": risk}
+        results[name] = {
+            "chance":   chance,
+            "decision": dec,
+            "risk":     risk,
+            "reason":   model_reason(name, chance, d, weak),
+            "solution": model_solution(name, chance, d, weak),
+        }
 
-    return jsonify(results)
+    # ── Overall summary ────────────────────────────────────────────────────────
+    chances    = [v["chance"] for v in results.values()]
+    avg_chance = round(sum(chances) / len(chances), 1)
+    approved_count = sum(1 for v in results.values() if v["decision"] == "Approved")
+
+    overall_tips = []
+    if d['credit'] < 700:
+        overall_tips.append(f"CIBIL Score is {d['credit']} — target 700+ for best approval odds")
+    if ratio > 8:
+        overall_tips.append(f"Loan amount ₹{int(d['loan']):,} is {ratio}x your income — reduce to ₹{int(d['income']*6):,}")
+    if d['income'] < 50000:
+        overall_tips.append(f"Income ₹{int(d['income']):,}/yr is low — add co-applicant or show extra income")
+    if d['experience'] < 2:
+        overall_tips.append(f"Only {d['experience']} yr experience — banks prefer 2+ years of stable employment")
+    if d['existing'] == 1:
+        overall_tips.append("Close your existing loan before applying for a new one")
+    if not overall_tips:
+        overall_tips.append("Your profile is strong. Apply with confidence at any bank.")
+
+    return jsonify({
+        "models":        results,
+        "avg_chance":    avg_chance,
+        "approved_count": approved_count,
+        "overall_tips":  overall_tips,
+    })
 
 
 @app.route('/scores')

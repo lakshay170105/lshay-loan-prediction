@@ -52,16 +52,47 @@ function renderResult(d) {
   if (window.innerWidth < 1024) card.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
-function renderAllModels(results) {
+function renderAllModels(data) {
   var card = document.getElementById('all-models-card');
   var grid = document.getElementById('all-models-grid');
   if (!card || !grid) return;
   card.style.display = 'block';
+
+  /* Overall summary */
+  var sumEl = document.getElementById('overall-summary');
+  if (sumEl && data.avg_chance !== undefined) {
+    sumEl.style.display = 'block';
+    document.getElementById('os-avg').textContent = data.avg_chance + '%';
+    document.getElementById('os-approved').textContent = data.approved_count + ' / 7';
+    var tipsList = document.getElementById('overall-tips-list');
+    if (tipsList && data.overall_tips) {
+      tipsList.innerHTML = data.overall_tips.map(function(t){
+        return '<li class="otip-item">' + t + '</li>';
+      }).join('');
+    }
+  }
+
+  /* Per-model cards */
+  var results = data.models || data;
   var html = '';
   for (var name in results) {
     var r = results[name];
     var cls = r.decision === 'Approved' ? 'amc-approved' : r.decision === 'Moderate Chance' ? 'amc-moderate' : 'amc-rejected';
-    html += '<div class="amc-item '+cls+'"><div class="amc-name">'+name+'</div><div class="amc-chance">'+r.chance+'%</div><div class="amc-decision">'+r.decision+'</div><div class="amc-risk">Risk: '+r.risk+'</div></div>';
+    var icon = r.decision === 'Approved' ? '✅' : r.decision === 'Moderate Chance' ? '⚠️' : '❌';
+    html += '<div class="amc-item ' + cls + '">' +
+      '<div class="amc-top">' +
+        '<div class="amc-name">' + name + '</div>' +
+        '<div class="amc-chance">' + r.chance + '%</div>' +
+      '</div>' +
+      '<div class="amc-decision">' + icon + ' ' + r.decision + '</div>' +
+      '<div class="amc-risk">Risk: ' + r.risk + '</div>';
+    if (r.reason) {
+      html += '<div class="amc-reason"><span class="amc-reason-label">Why:</span> ' + r.reason + '</div>';
+    }
+    if (r.solution) {
+      html += '<div class="amc-solution"><span class="amc-sol-label">Fix:</span> ' + r.solution + '</div>';
+    }
+    html += '</div>';
   }
   grid.innerHTML = html;
 }

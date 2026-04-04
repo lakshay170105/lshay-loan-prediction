@@ -416,3 +416,42 @@ textarea{resize:vertical;min-height:100px}
   .metrics-table{font-size:0.75rem}
   .metric-desc{display:none}
 }
+
+/* ── Overall Summary ── */
+.overall-summary{background:rgba(59,130,246,0.06);border:1px solid rgba(59,130,246,0.15);
+  border-radius:12px;padding:16px 18px;margin-bottom:18px}
+.overall-stats{display:flex;gap:24px;margin-bottom:14px;flex-wrap:wrap}
+.os-stat{text-align:center;min-width:80px}
+.os-val{font-size:1.6rem;font-weight:800;color:#60a5fa;line-height:1}
+.os-label{font-size:0.72rem;color:#64748b;margin-top:3px}
+.overall-tips-title{font-size:0.8rem;font-weight:700;color:#e2e8f0;margin-bottom:8px;
+  text-transform:uppercase;letter-spacing:.5px}
+.overall-tips-list{list-style:none;padding:0;margin:0;display:flex;flex-direction:column;gap:7px}
+.otip-item{font-size:0.82rem;color:#94a3b8;padding:8px 12px;border-radius:8px;
+  background:rgba(255,255,255,0.04);border-left:3px solid #3b82f6;line-height:1.5}
+
+/* ── All Models Grid (updated) ── */
+.all-models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.amc-item{border-radius:12px;padding:14px 16px;border:1px solid rgba(255,255,255,0.08);
+  display:flex;flex-direction:column;gap:6px}
+.amc-approved{background:rgba(20,83,45,0.2);border-color:rgba(34,197,94,0.2)}
+.amc-moderate{background:rgba(120,53,15,0.2);border-color:rgba(245,158,11,0.2)}
+.amc-rejected{background:rgba(127,29,29,0.2);border-color:rgba(239,68,68,0.2)}
+.amc-top{display:flex;justify-content:space-between;align-items:center}
+.amc-name{font-size:0.82rem;font-weight:700;color:#e2e8f0}
+.amc-chance{font-size:1.3rem;font-weight:800;color:#f1f5f9}
+.amc-decision{font-size:0.78rem;font-weight:600}
+.amc-approved .amc-decision{color:#86efac}
+.amc-moderate .amc-decision{color:#fcd34d}
+.amc-rejected .amc-decision{color:#fca5a5}
+.amc-risk{font-size:0.7rem;color:#64748b}
+.amc-reason{font-size:0.75rem;color:#94a3b8;line-height:1.5;padding-top:6px;
+  border-top:1px solid rgba(255,255,255,0.06)}
+.amc-reason-label{color:#60a5fa;font-weight:600}
+.amc-solution{font-size:0.75rem;color:#4ade80;line-height:1.5;
+  background:rgba(34,197,94,0.06);border-radius:6px;padding:6px 8px}
+.amc-sol-label{font-weight:700;color:#22c55e}
+
+@media(max-width:768px){
+  .all-models-grid{grid-template-columns:1fr}
+}
