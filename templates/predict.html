@@ -14,221 +14,125 @@
     ⚠️ <span>Predictions are <strong>not 100% accurate</strong>. For educational purposes only.</span>
   </div>
 
-  <div class="tab-bar">
-    <button class="tab-btn active" onclick="showTab('predict',this)">🔍 Predict</button>
-    <button class="tab-btn"        onclick="showTab('models',this)">📊 Model Comparison</button>
-    <button class="tab-btn"        onclick="showTab('features',this)">🔬 Feature Importance</button>
-  </div>
+  <!-- ══ PREDICT LAYOUT ══ -->
+  <div class="predict-layout">
 
-  <!-- ══ PREDICT TAB ══ -->
-  <div id="tab-predict" class="tab-pane active">
-    <div class="predict-layout">
-
-      <div class="card form-card">
-        <div class="card-header">📋 Applicant Details</div>
-        <form id="loanForm" autocomplete="off">
-          <div class="form-row">
-            <div class="field">
-              <label>Full Name</label>
-              <input name="name" placeholder="e.g. Lakshay" maxlength="50"/>
-            </div>
-            <div class="field">
-              <label>Age <span class="req">*</span></label>
-              <input name="age" type="number" placeholder="24" min="18" max="100" required/>
-            </div>
+    <div class="card form-card">
+      <div class="card-header">📋 Applicant Details</div>
+      <form id="loanForm" autocomplete="off">
+        <div class="form-row">
+          <div class="field">
+            <label>Full Name</label>
+            <input name="name" placeholder="e.g. Lakshay" maxlength="50"/>
           </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Annual Income (₹) <span class="req">*</span></label>
-              <input name="income" type="number" placeholder="450000" min="1" required/>
-            </div>
-            <div class="field">
-              <label>Credit Score (300–900) <span class="req">*</span></label>
-              <input name="credit" type="number" placeholder="720" min="300" max="900" required
-                     oninput="updateCreditHint(this.value)"/>
-              <div class="input-hint" id="credit-hint"></div>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Job Experience (yrs) <span class="req">*</span></label>
-              <input name="experience" type="number" placeholder="3" min="0" max="50" required/>
-            </div>
-            <div class="field">
-              <label>Loan Amount (₹) <span class="req">*</span></label>
-              <input name="loan" type="number" placeholder="200000" min="1" required/>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Education</label>
-              <select name="education">
-                <option value="0">High School</option>
-                <option value="1" selected>Graduate</option>
-                <option value="2">Post Graduate</option>
-              </select>
-            </div>
-            <div class="field">
-              <label>Marital Status</label>
-              <select name="married">
-                <option value="0">Single</option>
-                <option value="1">Married</option>
-              </select>
-            </div>
-          </div>
-          <div class="form-row">
-            <div class="field">
-              <label>Existing Loan?</label>
-              <select name="existing">
-                <option value="0">No</option>
-                <option value="1">Yes</option>
-              </select>
-            </div>
-          </div>
-          <button type="submit" class="btn-predict" id="submit-btn">
-            <span id="btn-text">🔍 Predict Approval</span>
-          </button>
-          <div class="error-box" id="err-box"></div>
-        </form>
-      </div>
-
-      <div id="right-panel">
-        <div class="card placeholder-card" id="placeholder-card">
-          <div class="placeholder-inner">
-            <div class="placeholder-icon">🤖</div>
-            <div class="placeholder-title">AI Loan Analyzer</div>
-            <div class="placeholder-text">Fill in your details and click Predict.<br/>You'll get a full breakdown of your loan profile.</div>
-            <div class="placeholder-chips">
-              <span>✅ Approval Chance</span>
-              <span>📊 Factor Analysis</span>
-              <span>💡 Smart Advice</span>
-              <span>💰 EMI Estimate</span>
-            </div>
+          <div class="field">
+            <label>Age <span class="req">*</span></label>
+            <input name="age" type="number" placeholder="24" min="18" max="100" required/>
           </div>
         </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Annual Income (₹) <span class="req">*</span></label>
+            <input name="income" type="number" placeholder="450000" min="1" required/>
+          </div>
+          <div class="field">
+            <label>Credit Score (300–900) <span class="req">*</span></label>
+            <input name="credit" type="number" placeholder="720" min="300" max="900" required
+                   oninput="updateCreditHint(this.value)"/>
+            <div class="input-hint" id="credit-hint"></div>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Job Experience (yrs) <span class="req">*</span></label>
+            <input name="experience" type="number" placeholder="3" min="0" max="50" required/>
+          </div>
+          <div class="field">
+            <label>Loan Amount (₹) <span class="req">*</span></label>
+            <input name="loan" type="number" placeholder="200000" min="1" required/>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Education</label>
+            <select name="education">
+              <option value="0">High School</option>
+              <option value="1" selected>Graduate</option>
+              <option value="2">Post Graduate</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Marital Status</label>
+            <select name="married">
+              <option value="0">Single</option>
+              <option value="1">Married</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label>Existing Loan?</label>
+            <select name="existing">
+              <option value="0">No</option>
+              <option value="1">Yes</option>
+            </select>
+          </div>
+        </div>
+        <button type="submit" class="btn-predict" id="submit-btn">
+          <span id="btn-text">🔍 Predict Approval</span>
+        </button>
+        <div class="error-box" id="err-box"></div>
+      </form>
+    </div>
 
-        <div id="result-card" style="display:none">
-          <div class="card result-top-card">
-            <div class="result-top">
-              <div class="gauge-section">
-                <div class="gauge-wrap">
-                  <canvas id="gaugeChart" width="160" height="160"></canvas>
-                  <div class="gauge-center">
-                    <div class="gauge-pct" id="gauge-pct">0%</div>
-                    <div class="gauge-sub">Chance</div>
-                  </div>
+    <div id="right-panel">
+      <!-- Placeholder -->
+      <div class="card placeholder-card" id="placeholder-card">
+        <div class="placeholder-inner">
+          <div class="placeholder-icon">🤖</div>
+          <div class="placeholder-title">AI Loan Analyzer</div>
+          <div class="placeholder-text">Fill in your details and click Predict.<br/>You'll get a full breakdown of your loan profile.</div>
+          <div class="placeholder-chips">
+            <span>✅ Approval Chance</span>
+            <span>🤖 All 7 Models</span>
+            <span>💰 EMI Estimate</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Result -->
+      <div id="result-card" style="display:none">
+
+        <!-- Gauge + Decision -->
+        <div class="card result-top-card">
+          <div class="result-top">
+            <div class="gauge-section">
+              <div class="gauge-wrap">
+                <canvas id="gaugeChart" width="160" height="160"></canvas>
+                <div class="gauge-center">
+                  <div class="gauge-pct" id="gauge-pct">0%</div>
+                  <div class="gauge-sub">Chance</div>
                 </div>
               </div>
-              <div class="decision-section">
-                <div class="applicant-name" id="res-name"></div>
-                <div class="decision-badge" id="res-decision"></div>
-                <div class="risk-pill" id="res-risk"></div>
-                <div class="emi-box" id="res-emi"></div>
-                <div class="model-tag">Best Model: <span id="res-model"></span></div>
-              </div>
             </div>
-            <div class="input-summary" id="input-summary"></div>
+            <div class="decision-section">
+              <div class="applicant-name" id="res-name"></div>
+              <div class="decision-badge" id="res-decision"></div>
+              <div class="risk-pill" id="res-risk"></div>
+              <div class="emi-box" id="res-emi"></div>
+              <div class="model-tag">Best Model: <span id="res-model"></span></div>
+            </div>
           </div>
-
-          <!-- All Models on this input -->
-          <div class="card" id="all-models-card" style="display:none">
-            <div class="card-header">🤖 All 7 Models — Your Input Result</div>
-            <div class="all-models-grid" id="all-models-grid"></div>
-          </div>
-
-          <div class="card factor-card">
-            <div class="card-header">🧪 Profile Factor Analysis</div>
-            <div class="factor-table" id="factor-table"></div>
-          </div>
-
-          <div class="card advice-card">
-            <div class="card-header">💡 Smart Recommendations</div>
-            <ul class="advice-list" id="advice-list"></ul>
-            <div id="rec-loan-box" class="rec-loan-box" style="display:none"></div>
-          </div>
+          <div class="input-summary" id="input-summary"></div>
         </div>
+
+        <!-- All 7 Models Result -->
+        <div class="card" id="all-models-card" style="display:none">
+          <div class="card-header">🤖 All 7 Models — Your Input Result</div>
+          <div class="all-models-grid" id="all-models-grid"></div>
+        </div>
+
       </div>
-    </div>
-  </div>
-
-  <!-- ══ MODEL COMPARISON TAB ══ -->
-  <div id="tab-models" class="tab-pane">
-    <div class="card chart-card">
-      <div class="card-header">🏆 Algorithm Accuracy Comparison
-        <span class="best-badge" id="best-tag-models"></span>
-      </div>
-      <div class="chart-wrap"><canvas id="barChart"></canvas></div>
-      <div class="algo-grid" id="algo-grid"></div>
-    </div>
-
-    <!-- Detailed metrics table -->
-    <div class="card">
-      <div class="card-header">📋 Detailed Metrics — All Models</div>
-      <div class="metrics-table-wrap">
-        <table class="metrics-table" id="metrics-table">
-          <thead>
-            <tr>
-              <th>Model</th>
-              <th>Accuracy</th>
-              <th>Precision</th>
-              <th>Recall</th>
-              <th>F1 Score</th>
-              <th>What it does</th>
-            </tr>
-          </thead>
-          <tbody id="metrics-tbody"></tbody>
-        </table>
-      </div>
-    </div>
-
-    <!-- Random Forest deep dive -->
-    <div class="card rf-card">
-      <div class="card-header">🌲 Random Forest — Deep Dive</div>
-      <div class="rf-grid">
-        <div class="rf-stat-box">
-          <div class="rf-stat-label">Trees Built</div>
-          <div class="rf-stat-val">200</div>
-        </div>
-        <div class="rf-stat-box">
-          <div class="rf-stat-label">Max Depth</div>
-          <div class="rf-stat-val">10</div>
-        </div>
-        <div class="rf-stat-box">
-          <div class="rf-stat-label">Accuracy</div>
-          <div class="rf-stat-val" id="rf-acc">—</div>
-        </div>
-        <div class="rf-stat-box">
-          <div class="rf-stat-label">F1 Score</div>
-          <div class="rf-stat-val" id="rf-f1">—</div>
-        </div>
-      </div>
-      <div class="rf-how">
-        <div class="rf-how-title">How Random Forest Works on Your Loan Data</div>
-        <div class="rf-steps">
-          <div class="rf-step"><span class="rf-step-num">1</span><span>Takes your 8 inputs (Age, Income, Credit Score, etc.)</span></div>
-          <div class="rf-step"><span class="rf-step-num">2</span><span>Passes them through 200 different decision trees</span></div>
-          <div class="rf-step"><span class="rf-step-num">3</span><span>Each tree votes: Approve or Reject</span></div>
-          <div class="rf-step"><span class="rf-step-num">4</span><span>Final answer = majority vote → converted to probability %</span></div>
-          <div class="rf-step"><span class="rf-step-num">5</span><span>Credit Score has 57% weight — most important feature</span></div>
-        </div>
-      </div>
-    </div>
-
-    <div class="card info-card">
-      <div class="card-header">📚 All Algorithms Explained</div>
-      <div class="algo-info-grid" id="algo-info-grid"></div>
-    </div>
-  </div>
-
-  <!-- ══ FEATURE IMPORTANCE TAB ══ -->
-  <div id="tab-features" class="tab-pane">
-    <div class="card chart-card">
-      <div class="card-header">🔬 Feature Importance — Random Forest</div>
-      <div class="chart-wrap"><canvas id="featChart"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="card-header">📖 What Each Feature Means</div>
-      <div class="feat-desc-grid" id="feat-desc-grid"></div>
     </div>
   </div>
 
