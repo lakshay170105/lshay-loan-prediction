@@ -359,3 +359,60 @@ textarea{resize:vertical;min-height:100px}
 
 /* ── Chart card min height ── */
 .chart-card .chart-wrap{height:320px}
+
+/* ── All Models Grid ── */
+.all-models-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-top:4px}
+.amc-item{border-radius:12px;padding:14px 12px;text-align:center;border:1px solid rgba(255,255,255,0.08)}
+.amc-approved{background:rgba(20,83,45,0.25);border-color:rgba(34,197,94,0.25)}
+.amc-moderate{background:rgba(120,53,15,0.25);border-color:rgba(245,158,11,0.25)}
+.amc-rejected{background:rgba(127,29,29,0.25);border-color:rgba(239,68,68,0.25)}
+.amc-name{font-size:0.72rem;color:#94a3b8;margin-bottom:6px;font-weight:500}
+.amc-chance{font-size:1.5rem;font-weight:800;color:#f1f5f9;line-height:1}
+.amc-decision{font-size:0.72rem;margin-top:4px;font-weight:600}
+.amc-approved .amc-decision{color:#86efac}
+.amc-moderate .amc-decision{color:#fcd34d}
+.amc-rejected .amc-decision{color:#fca5a5}
+.amc-risk{font-size:0.68rem;color:#64748b;margin-top:2px}
+
+/* ── Metrics table ── */
+.metrics-table-wrap{overflow-x:auto}
+.metrics-table{width:100%;border-collapse:collapse;font-size:0.82rem}
+.metrics-table th{padding:10px 12px;text-align:left;color:#60a5fa;font-size:0.75rem;
+  text-transform:uppercase;letter-spacing:.5px;border-bottom:1px solid rgba(255,255,255,0.08)}
+.metrics-table td{padding:10px 12px;border-bottom:1px solid rgba(255,255,255,0.04);color:#94a3b8;vertical-align:top}
+.metrics-table tr:hover td{background:rgba(255,255,255,0.03)}
+.metrics-table .best-row td{background:rgba(34,197,94,0.05)}
+.metric-val{font-weight:700;color:#e2e8f0;text-align:center}
+.metric-val.acc{color:#22c55e}
+.metric-desc{font-size:0.75rem;color:#475569;max-width:280px}
+.best-tag{font-size:0.7rem;color:#22c55e;margin-left:4px}
+
+/* ── RF deep dive ── */
+.rf-card{}
+.rf-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}
+.rf-stat-box{background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.07);
+  border-radius:10px;padding:14px;text-align:center}
+.rf-stat-label{font-size:0.72rem;color:#64748b;margin-bottom:6px;text-transform:uppercase;letter-spacing:.5px}
+.rf-stat-val{font-size:1.4rem;font-weight:800;color:#60a5fa}
+.rf-how-title{font-size:0.85rem;font-weight:600;color:#e2e8f0;margin-bottom:12px}
+.rf-steps{display:flex;flex-direction:column;gap:8px}
+.rf-step{display:flex;align-items:flex-start;gap:12px;font-size:0.82rem;color:#94a3b8;line-height:1.5}
+.rf-step-num{background:rgba(59,130,246,0.2);color:#60a5fa;border-radius:50%;
+  width:22px;height:22px;display:flex;align-items:center;justify-content:center;
+  font-size:0.72rem;font-weight:700;flex-shrink:0}
+
+/* ── Algo info cards ── */
+.algo-info-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px}
+.algo-info-card{background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.07);
+  border-radius:12px;padding:14px 16px}
+.algo-info-card.best-card{border-color:rgba(34,197,94,0.3);background:rgba(34,197,94,0.05)}
+.aic-name{font-size:0.88rem;font-weight:700;color:#e2e8f0;margin-bottom:4px}
+.aic-acc{font-size:0.78rem;color:#60a5fa;margin-bottom:8px}
+.aic-desc{font-size:0.76rem;color:#64748b;line-height:1.6}
+
+@media(max-width:768px){
+  .rf-grid{grid-template-columns:repeat(2,1fr)}
+  .all-models-grid{grid-template-columns:repeat(2,1fr)}
+  .metrics-table{font-size:0.75rem}
+  .metric-desc{display:none}
+}
