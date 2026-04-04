@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 __pycache__/
 *.pyc
 *.pyo
@@ -10,16 +9,3 @@ dist/
 build/
 .DS_Store
 Thumbs.db
-=======
-__pycache__/
-*.pyc
-*.pyo
-.env
-venv/
-.venv/
-*.egg-info/
-dist/
-build/
-.DS_Store
-Thumbs.db
->>>>>>> 9f0dc4fbe2558693855a50fc425a4f1978d581a7
