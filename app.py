@@ -19,19 +19,17 @@ scaler = joblib.load('scaler.pkl')
 with open('model_scores.json') as f:
     meta = json.load(f)
 
-# ── Re-train all models in memory for /all-predictions ───────────────────────
-# (lightweight — uses same dataset that was used during build)
+# ── Re-train all models using the SAME scaler loaded above ───────────────────
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.preprocessing import StandardScaler as _SS
 
-_df = pd.read_csv('dataset.csv')
-_X  = _df.drop('Approved', axis=1)
-_y  = _df['Approved']
+_df  = pd.read_csv('dataset.csv')
+_X   = _df.drop('Approved', axis=1)
+_y   = _df['Approved']
 _Xtr, _Xte, _ytr, _yte = train_test_split(_X, _y, test_size=0.2,
                                             random_state=42, stratify=_y)
-_sc      = _SS()
-_Xtr_s   = _sc.fit_transform(_Xtr)
+# Use the SAME scaler that was saved by train_models.py
+_Xtr_s = scaler.transform(_Xtr)
 
 ALL_MODELS = {
     "Logistic Regression": LogisticRegression(max_iter=1000),
@@ -227,7 +225,7 @@ def all_predictions():
 
     feat   = np.array([[d['age'], d['income'], d['credit'], d['experience'],
                          d['loan'], d['existing'], d['education'], d['married']]])
-    feat_s = _sc.transform(feat)   # use the scaler fitted on training data
+    feat_s = scaler.transform(feat)   # same scaler as /predict
 
     results = {}
     for name, clf in ALL_MODELS.items():
